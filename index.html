@@ -15,8 +15,24 @@
             <button onclick="toggleSettings()" style="margin-top: 10px; background: #2a2a2a; color: #e0e0e0; border: 1px solid #444; font-size: 0.9em; padding: 8px 16px; border-radius: 8px; cursor: pointer;">⚙️ Settings</button>
         </header>
 
+        <!-- Login Section -->
+        <div id="auth-section" class="section">
+            <h2>🔐 Login</h2>
+            <form onsubmit="event.preventDefault(); login();">
+                <div style="margin-bottom: 15px;">
+                    <input type="email" id="login-email" placeholder="Email" style="width: 100%; padding: 12px; border: 2px solid #333; border-radius: 8px; background: #0a0a0a; color: #e0e0e0; margin-bottom: 10px;">
+                    <input type="password" id="login-password" placeholder="Password" style="width: 100%; padding: 12px; border: 2px solid #333; border-radius: 8px; background: #0a0a0a; color: #e0e0e0;">
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <button type="submit" class="primary-btn" style="flex: 1;">Login</button>
+                    <button type="button" onclick="signup()" class="secondary-btn" style="flex: 1;">Sign Up</button>
+                </div>
+            </form>
+            <p class="hint">Your flashcards are stored securely in your account</p>
+        </div>
+
         <!-- API Key Setup -->
-        <div id="setup-section" class="section">
+        <div id="setup-section" class="section hidden">
             <h2>Setup</h2>
             <form onsubmit="event.preventDefault(); saveApiKey();">
                 <div class="input-group">

@@ -10,14 +10,14 @@
 6. Click **Create project**
 7. Wait for it to finish, then click **Continue**
 
-## Step 2: Enable Anonymous Authentication
+## Step 2: Enable Email/Password Authentication
 
 1. In the left sidebar, click **"Authentication"**
 2. Click **"Get started"** button
 3. Click on the **"Sign-in method"** tab at the top
-4. Find **"Anonymous"** in the list
+4. Find **"Email/Password"** in the list
 5. Click on it
-6. Toggle the **Enable** switch to ON
+6. Toggle the **Enable** switch to ON (first option only, not email link)
 7. Click **Save**
 
 ## Step 3: Create Firestore Database
@@ -41,6 +41,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     match /users/{userId} {
+      // Users can only access their own data
       allow read, write: if request.auth != null && request.auth.uid == userId;
     }
   }

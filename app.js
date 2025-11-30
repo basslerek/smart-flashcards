@@ -1,6 +1,6 @@
 // Firebase imports (will be loaded from CDN)
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-import { getAuth, signInAnonymously, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
 import { getFirestore, doc, setDoc, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 import { firebaseConfig } from './firebase-config.js';
 
@@ -22,20 +22,80 @@ async function initFirebase() {
         auth = getAuth(app);
         db = getFirestore(app);
         
-        // Sign in anonymously
-        await signInAnonymously(auth);
-        
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                userId = user.uid;
-                syncFromFirebase();
-            }
+        // Check if user is already logged in
+        return new Promise((resolve) => {
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    userId = user.uid;
+                    console.log('User logged in:', user.email);
+                    syncFromFirebase();
+                    resolve(true);
+                } else {
+                    console.log('No user logged in');
+                    resolve(false);
+                }
+            });
         });
-        
-        return true;
     } catch (error) {
         console.error('Firebase init error:', error);
         return false;
+    }
+}
+
+// Login function
+async function login() {
+    const email = document.getElementById('login-email').value.trim();
+    const password = document.getElementById('login-password').value.trim();
+    
+    if (!email || !password) {
+        alert('Please enter email and password');
+        return;
+    }
+    
+    try {
+        await signInWithEmailAndPassword(auth, email, password);
+        document.getElementById('auth-section').classList.add('hidden');
+        showSection('deck-section');
+        alert('Logged in successfully!');
+    } catch (error) {
+        if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
+            alert('Invalid email or password');
+        } else {
+            alert('Login error: ' + error.message);
+        }
+        console.error('Login error:', error);
+    }
+}
+
+// Signup function
+async function signup() {
+    const email = document.getElementById('login-email').value.trim();
+    const password = document.getElementById('login-password').value.trim();
+    
+    if (!email || !password) {
+        alert('Please enter email and password');
+        return;
+    }
+    
+    if (password.length < 6) {
+        alert('Password must be at least 6 characters');
+        return;
+    }
+    
+    try {
+        await createUserWithEmailAndPassword(auth, email, password);
+        document.getElementById('auth-section').classList.add('hidden');
+        showSection('deck-section');
+        alert('Account created successfully!');
+    } catch (error) {
+        if (error.code === 'auth/email-already-in-use') {
+            alert('Email already in use. Try logging in instead.');
+        } else if (error.code === 'auth/invalid-email') {
+            alert('Invalid email address');
+        } else {
+            alert('Signup error: ' + error.message);
+        }
+        console.error('Signup error:', error);
     }
 }
 
@@ -58,8 +118,13 @@ function syncFromFirebase() {
                 localStorage.setItem('openai_api_key', apiKey);
                 const apiKeyInput = document.getElementById('api-key');
                 if (apiKeyInput) apiKeyInput.value = '••••••••';
+                document.getElementById('auth-section').classList.add('hidden');
                 document.getElementById('setup-section').classList.add('hidden');
                 showSection('deck-section');
+            } else {
+                // User logged in but no API key set
+                document.getElementById('auth-section').classList.add('hidden');
+                document.getElementById('setup-section').classList.remove('hidden');
             }
             if (data.model) {
                 selectedModel = data.model;
@@ -155,17 +220,24 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (setupSelect) setupSelect.value = selectedModel;
     if (mainSelect) mainSelect.value = selectedModel;
     
-    // If no Firebase, load from localStorage and show UI
+    // If user not logged in, show auth screen
     if (!firebaseReady) {
-        flashcards = JSON.parse(localStorage.getItem('flashcards')) || [];
+        document.getElementById('setup-section').classList.add('hidden');
+        document.getElementById('auth-section').classList.remove('hidden');
+    } else {
+        document.getElementById('auth-section').classList.add('hidden');
+        // Check if API key is set
         if (apiKey) {
-            document.getElementById('api-key').value = '••••••••';
+            const apiKeyInput = document.getElementById('api-key');
+            if (apiKeyInput) apiKeyInput.value = '••••••••';
             document.getElementById('setup-section').classList.add('hidden');
             showSection('deck-section');
             updateStats();
+        } else {
+            // Show setup to enter API key
+            document.getElementById('setup-section').classList.remove('hidden');
         }
     }
-    // If Firebase is ready, syncFromFirebase will handle showing the UI
 });
 
 // API Key Management
@@ -610,6 +682,8 @@ function toggleSettings() {
 }
 
 // Make all functions globally available
+window.login = login;
+window.signup = signup;
 window.saveApiKey = saveApiKey;
 window.saveModel = saveModel;
 window.saveModelMain = saveModelMain;

@@ -89,14 +89,20 @@
         <div id="input-section" class="section hidden" style="display: none;">
             <h2>🤖 Generate Flashcards with AI</h2>
             
-            <div style="margin-bottom: 15px;">
-                <label for="model-select-main" style="display: block; margin-bottom: 8px; font-weight: 600; color: #888;">AI Model:</label>
-                <select id="model-select-main" onchange="saveModelMain()" style="width: 100%; padding: 10px; border: 2px solid #333; border-radius: 8px; font-size: 0.95em; background: #0a0a0a; color: #e0e0e0;">
-                    <option value="gpt-3.5-turbo">GPT-3.5 Turbo (Fast, Cheap)</option>
-                    <option value="gpt-4o-mini">GPT-4o Mini (Balanced)</option>
-                    <option value="gpt-4o">GPT-4o (Best Quality)</option>
-                    <option value="gpt-4-turbo">GPT-4 Turbo (Premium)</option>
-                </select>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;"></div>
+                <div>
+                    <label for="model-select-main" style="display: block; margin-bottom: 8px; font-weight: 600; color: #888;">AI Model:</label>
+                    <select id="model-select-main" onchange="saveModelMain()" style="width: 100%; padding: 10px; border: 2px solid #333; border-radius: 8px; font-size: 0.95em; background: #0a0a0a; color: #e0e0e0;">
+                        <option value="gpt-3.5-turbo">GPT-3.5 Turbo (Fast, Cheap)</option>
+                        <option value="gpt-4o-mini">GPT-4o Mini (Balanced)</option>
+                        <option value="gpt-4o">GPT-4o (Best Quality)</option>
+                        <option value="gpt-4-turbo">GPT-4 Turbo (Premium)</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="card-count" style="display: block; margin-bottom: 8px; font-weight: 600; color: #888;">Number of Cards:</label>
+                    <input type="number" id="card-count" min="1" max="20" value="5" style="width: 100%; padding: 10px; border: 2px solid #333; border-radius: 8px; font-size: 0.95em; background: #0a0a0a; color: #e0e0e0;">
+                </div>
             </div>
             
             <textarea id="text-input" placeholder="Paste your text here (article, notes, etc.)..."></textarea>

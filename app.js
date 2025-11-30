@@ -314,6 +314,7 @@ function saveModelMain() {
 // Generate flashcards using OpenAI
 async function generateFlashcards() {
     const text = document.getElementById('text-input').value.trim();
+    const cardCount = parseInt(document.getElementById('card-count').value) || 5;
     
     if (!text) {
         showToast('Please paste some text first', 'warning');
@@ -322,6 +323,11 @@ async function generateFlashcards() {
     
     if (!apiKey) {
         showToast('Please set your API key first', 'warning');
+        return;
+    }
+    
+    if (cardCount < 1 || cardCount > 20) {
+        showToast('Please enter a number between 1 and 20', 'warning');
         return;
     }
     
@@ -349,7 +355,7 @@ async function generateFlashcards() {
                 model: selectedModel,
                 messages: [{
                     role: 'system',
-                    content: 'You are a helpful assistant that creates flashcards. Generate 5-10 flashcards from the given text. Return ONLY a JSON array with objects containing "question" and "answer" fields. No other text.'
+                    content: `You are a helpful assistant that creates flashcards. Generate exactly ${cardCount} flashcards from the given text. Return ONLY a JSON array with objects containing "question" and "answer" fields. No other text.`
                 }, {
                     role: 'user',
                     content: `Create flashcards from this text:\n\n${text}`

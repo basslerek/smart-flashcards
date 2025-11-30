@@ -40,6 +40,17 @@
         <!-- Text Input Section -->
         <div id="input-section" class="section hidden">
             <h2>Generate Flashcards</h2>
+            
+            <div style="margin-bottom: 15px;">
+                <label for="model-select-main" style="display: block; margin-bottom: 8px; font-weight: 600; color: #666;">AI Model:</label>
+                <select id="model-select-main" onchange="saveModelMain()" style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 0.95em;">
+                    <option value="gpt-3.5-turbo">GPT-3.5 Turbo (Fast, Cheap)</option>
+                    <option value="gpt-4o-mini">GPT-4o Mini (Balanced)</option>
+                    <option value="gpt-4o">GPT-4o (Best Quality)</option>
+                    <option value="gpt-4-turbo">GPT-4 Turbo (Premium)</option>
+                </select>
+            </div>
+            
             <textarea id="text-input" placeholder="Paste your text here (article, notes, etc.)..."></textarea>
             <button onclick="generateFlashcards()" class="primary-btn">Generate Flashcards</button>
             <div id="loading" class="hidden">Generating flashcards...</div>

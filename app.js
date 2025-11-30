@@ -61,8 +61,10 @@ function syncFromFirebase() {
             if (data.model) {
                 selectedModel = data.model;
                 localStorage.setItem('openai_model', selectedModel);
-                const modelSelect = document.getElementById('model-select');
-                if (modelSelect) modelSelect.value = selectedModel;
+                const setupSelect = document.getElementById('model-select');
+                const mainSelect = document.getElementById('model-select-main');
+                if (setupSelect) setupSelect.value = selectedModel;
+                if (mainSelect) mainSelect.value = selectedModel;
             }
             updateStats();
         } else {
@@ -129,7 +131,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     `;
     
     // Restore model selection
-    document.getElementById('model-select').value = selectedModel;
+    const setupSelect = document.getElementById('model-select');
+    const mainSelect = document.getElementById('model-select-main');
+    if (setupSelect) setupSelect.value = selectedModel;
+    if (mainSelect) mainSelect.value = selectedModel;
     
     // If no Firebase, load from localStorage and show UI
     if (!firebaseReady) {
@@ -171,9 +176,26 @@ function saveApiKey() {
 
 function saveModel() {
     const select = document.getElementById('model-select');
-    selectedModel = select.value;
-    localStorage.setItem('openai_model', selectedModel);
-    saveToFirebase();
+    if (select) {
+        selectedModel = select.value;
+        localStorage.setItem('openai_model', selectedModel);
+        saveToFirebase();
+        // Sync with main selector
+        const mainSelect = document.getElementById('model-select-main');
+        if (mainSelect) mainSelect.value = selectedModel;
+    }
+}
+
+function saveModelMain() {
+    const select = document.getElementById('model-select-main');
+    if (select) {
+        selectedModel = select.value;
+        localStorage.setItem('openai_model', selectedModel);
+        saveToFirebase();
+        // Sync with setup selector
+        const setupSelect = document.getElementById('model-select');
+        if (setupSelect) setupSelect.value = selectedModel;
+    }
 }
 
 // Generate flashcards using OpenAI
@@ -437,6 +459,7 @@ function toggleSettings() {
 // Make all functions globally available
 window.saveApiKey = saveApiKey;
 window.saveModel = saveModel;
+window.saveModelMain = saveModelMain;
 window.generateFlashcards = generateFlashcards;
 window.startQuiz = startQuiz;
 window.flipCard = flipCard;

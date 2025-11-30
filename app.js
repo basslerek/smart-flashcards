@@ -101,27 +101,25 @@ async function signup() {
 
 // Logout function
 async function logout() {
-    if (confirm('Are you sure you want to logout?')) {
-        try {
-            await signOut(auth);
-            // Clear local data
-            flashcards = [];
-            apiKey = '';
-            userId = null;
-            localStorage.clear();
-            
-            // Stop Firebase sync
-            if (unsubscribe) {
-                unsubscribe();
-                unsubscribe = null;
-            }
-            
-            // Reload page to reset everything
-            window.location.reload();
-        } catch (error) {
-            showToast('Logout error: ' + error.message, 'error');
-            console.error('Logout error:', error);
+    try {
+        await signOut(auth);
+        // Clear local data
+        flashcards = [];
+        apiKey = '';
+        userId = null;
+        localStorage.clear();
+        
+        // Stop Firebase sync
+        if (unsubscribe) {
+            unsubscribe();
+            unsubscribe = null;
         }
+        
+        // Reload page to reset everything
+        window.location.reload();
+    } catch (error) {
+        showToast('Logout error: ' + error.message, 'error');
+        console.error('Logout error:', error);
     }
 }
 

@@ -48,7 +48,7 @@ async function login() {
     const password = document.getElementById('login-password').value.trim();
     
     if (!email || !password) {
-        alert('Please enter email and password');
+        showToast('Please enter email and password', 'warning');
         return;
     }
     
@@ -56,12 +56,12 @@ async function login() {
         await signInWithEmailAndPassword(auth, email, password);
         document.getElementById('auth-section').classList.add('hidden');
         showSection('deck-section');
-        alert('Logged in successfully!');
+        showToast('Logged in successfully!', 'success');
     } catch (error) {
         if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
-            alert('Invalid email or password');
+            showToast('Invalid email or password', 'error');
         } else {
-            alert('Login error: ' + error.message);
+            showToast('Login error: ' + error.message, 'error');
         }
         console.error('Login error:', error);
     }
@@ -73,12 +73,12 @@ async function signup() {
     const password = document.getElementById('login-password').value.trim();
     
     if (!email || !password) {
-        alert('Please enter email and password');
+        showToast('Please enter email and password', 'warning');
         return;
     }
     
     if (password.length < 6) {
-        alert('Password must be at least 6 characters');
+        showToast('Password must be at least 6 characters', 'warning');
         return;
     }
     
@@ -86,14 +86,14 @@ async function signup() {
         await createUserWithEmailAndPassword(auth, email, password);
         document.getElementById('auth-section').classList.add('hidden');
         showSection('deck-section');
-        alert('Account created successfully!');
+        showToast('Account created successfully!', 'success');
     } catch (error) {
         if (error.code === 'auth/email-already-in-use') {
-            alert('Email already in use. Try logging in instead.');
+            showToast('Email already in use. Try logging in instead.', 'error');
         } else if (error.code === 'auth/invalid-email') {
-            alert('Invalid email address');
+            showToast('Invalid email address', 'error');
         } else {
-            alert('Signup error: ' + error.message);
+            showToast('Signup error: ' + error.message, 'error');
         }
         console.error('Signup error:', error);
     }
@@ -119,7 +119,7 @@ async function logout() {
             // Reload page to reset everything
             window.location.reload();
         } catch (error) {
-            alert('Logout error: ' + error.message);
+            showToast('Logout error: ' + error.message, 'error');
             console.error('Logout error:', error);
         }
     }
@@ -272,7 +272,7 @@ function saveApiKey() {
     const key = input.value.trim();
     
     if (!key || key === '••••••••') {
-        alert('Please enter a valid API key');
+        showToast('Please enter a valid API key', 'warning');
         return;
     }
     
@@ -286,7 +286,7 @@ function saveApiKey() {
     document.getElementById('setup-section').classList.add('hidden');
     showSection('deck-section');
     updateStats();
-    alert('API key saved successfully!');
+    showToast('API key saved successfully!', 'success');
 }
 
 function saveModel() {
@@ -318,12 +318,12 @@ async function generateFlashcards() {
     const text = document.getElementById('text-input').value.trim();
     
     if (!text) {
-        alert('Please paste some text first');
+        showToast('Please paste some text first', 'warning');
         return;
     }
     
     if (!apiKey) {
-        alert('Please set your API key first');
+        showToast('Please set your API key first', 'warning');
         return;
     }
     
@@ -396,7 +396,7 @@ async function generateFlashcards() {
             updateStats();
             document.getElementById('text-input').value = '';
             document.getElementById('loading').classList.add('hidden');
-            alert(`Generated ${newCards.length} flashcards!`);
+            showToast(`Generated ${newCards.length} flashcards!`, 'success');
             closeGenerateSection();
             return; // Success, exit retry loop
             
@@ -405,7 +405,7 @@ async function generateFlashcards() {
                 // Last retry failed
                 console.error('Error:', error);
                 document.getElementById('loading').classList.add('hidden');
-                alert('Failed to generate flashcards. Rate limit exceeded. Please wait a minute and try again.');
+                showToast('Failed to generate flashcards. Rate limit exceeded. Please wait a minute and try again.', 'error');
                 return;
             }
             // Continue to next retry
@@ -455,7 +455,7 @@ function startQuiz() {
     const dueCards = flashcards.filter(card => card.nextReview <= Date.now());
     
     if (dueCards.length === 0) {
-        alert('No cards due for review! Come back later or add more cards.');
+        showToast('No cards due for review! Come back later or add more cards.', 'info');
         return;
     }
     
@@ -503,7 +503,7 @@ function rateCard(quality) {
 function endQuiz() {
     hideAllSections();
     showSection('deck-section');
-    alert('Learning session completed! Great job! 🎉');
+    showToast('Learning session completed! Great job! 🎉', 'success');
 }
 
 // Card management
@@ -582,7 +582,7 @@ function addCard() {
     const answer = document.getElementById('new-answer').value.trim();
     
     if (!question || !answer) {
-        alert('Please enter both question and answer');
+        showToast('Please enter both question and answer', 'warning');
         return;
     }
     
@@ -601,7 +601,7 @@ function addCard() {
     updateStats();
     cancelAddCard();
     viewAllCards();
-    alert('Card added successfully!');
+    showToast('Card added successfully!', 'success');
 }
 
 function editCard(index) {
@@ -620,7 +620,7 @@ function saveCardEdit(index) {
     const newAnswer = document.getElementById(`edit-answer-${index}`).value.trim();
     
     if (!newQuestion || !newAnswer) {
-        alert('Question and answer cannot be empty');
+        showToast('Question and answer cannot be empty', 'warning');
         return;
     }
     
@@ -628,6 +628,7 @@ function saveCardEdit(index) {
     flashcards[index].answer = newAnswer;
     saveFlashcards();
     viewAllCards();
+    showToast('Card updated!', 'success');
 }
 
 function resetCard(index) {
@@ -642,7 +643,7 @@ function resetCard(index) {
         saveFlashcards();
         updateStats();
         viewAllCards();
-        alert('Card progress reset!');
+        showToast('Card progress reset!', 'success');
     }
 }
 
@@ -652,7 +653,7 @@ function deleteCard(index) {
         saveFlashcards();
         updateStats();
         viewAllCards();
-        alert('Card deleted!');
+        showToast('Card deleted!', 'success');
     }
 }
 
@@ -702,6 +703,21 @@ function saveFlashcards() {
     saveToFirebase();
 }
 
+// Toast notification system
+function showToast(message, type = 'info') {
+    const toast = document.getElementById('toast');
+    toast.textContent = message;
+    toast.className = `toast ${type}`;
+    
+    // Show toast
+    setTimeout(() => toast.classList.add('show'), 10);
+    
+    // Hide after 3 seconds
+    setTimeout(() => {
+        toast.classList.remove('show');
+    }, 3000);
+}
+
 function toggleSettings() {
     const setupSection = document.getElementById('setup-section');
     setupSection.classList.toggle('hidden');
@@ -711,6 +727,7 @@ function toggleSettings() {
 window.login = login;
 window.signup = signup;
 window.logout = logout;
+window.showToast = showToast;
 window.saveApiKey = saveApiKey;
 window.saveModel = saveModel;
 window.saveModelMain = saveModelMain;

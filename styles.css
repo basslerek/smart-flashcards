@@ -187,6 +187,42 @@ button {
     font-size: 0.85em;
 }
 
+.toast {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: #1a1a1a;
+    color: #e0e0e0;
+    padding: 16px 24px;
+    border-radius: 8px;
+    border: 1px solid #4a9eff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    transform: translateY(-20px);
+    transition: all 0.3s ease;
+    pointer-events: none;
+    z-index: 1000;
+    max-width: 400px;
+}
+
+.toast.show {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+}
+
+.toast.success {
+    border-color: #28a745;
+}
+
+.toast.error {
+    border-color: #dc3545;
+}
+
+.toast.warning {
+    border-color: #ffc107;
+}
+
 .flashcard {
     background: #0a0a0a;
     border: 2px solid #333;

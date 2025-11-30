@@ -334,12 +334,12 @@ function updateCardSchedule(card, quality) {
     saveFlashcards();
 }
 
-// Quiz functionality
+// Learning session functionality
 function startQuiz() {
     const dueCards = flashcards.filter(card => card.nextReview <= Date.now());
     
     if (dueCards.length === 0) {
-        alert('No cards due for review! Come back later.');
+        alert('No cards due for review! Come back later or add more cards.');
         return;
     }
     
@@ -388,7 +388,7 @@ function endQuiz() {
     hideAllSections();
     showSection('input-section');
     showSection('deck-section');
-    alert('Quiz completed! Great job! 🎉');
+    alert('Learning session completed! Great job! 🎉');
 }
 
 // Card management

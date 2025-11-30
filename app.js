@@ -6,6 +6,7 @@ import { firebaseConfig } from './firebase-config.js';
 
 // State management
 let apiKey = localStorage.getItem('openai_api_key') || '';
+let selectedModel = localStorage.getItem('openai_model') || 'gpt-3.5-turbo';
 let flashcards = [];
 let currentQuizCard = null;
 let quizQueue = [];
@@ -57,6 +58,12 @@ function syncFromFirebase() {
                 showSection('input-section');
                 showSection('deck-section');
             }
+            if (data.model) {
+                selectedModel = data.model;
+                localStorage.setItem('openai_model', selectedModel);
+                const modelSelect = document.getElementById('model-select');
+                if (modelSelect) modelSelect.value = selectedModel;
+            }
             updateStats();
         } else {
             // No data in Firebase yet - show setup if no local API key
@@ -80,6 +87,7 @@ async function saveToFirebase() {
         await setDoc(userDocRef, {
             flashcards,
             apiKey,
+            model: selectedModel,
             lastUpdated: Date.now()
         }, { merge: true });
     } catch (error) {
@@ -100,12 +108,28 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Restore setup section content
     document.getElementById('setup-section').innerHTML = `
         <h2>Setup</h2>
-        <div class="input-group">
-            <input type="password" id="api-key" placeholder="Enter your OpenAI API key">
-            <button onclick="saveApiKey()">Save Key</button>
-        </div>
+        <form onsubmit="event.preventDefault(); saveApiKey();">
+            <div class="input-group">
+                <input type="password" id="api-key" placeholder="Enter your OpenAI API key" autocomplete="off">
+                <button type="submit">Save Key</button>
+            </div>
+        </form>
         <p class="hint">Your API key syncs across all your devices via Firebase</p>
+        
+        <div style="margin-top: 20px;">
+            <label for="model-select" style="display: block; margin-bottom: 8px; font-weight: 600;">AI Model:</label>
+            <select id="model-select" onchange="saveModel()" style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 1em;">
+                <option value="gpt-3.5-turbo">GPT-3.5 Turbo (Fast, Cheap)</option>
+                <option value="gpt-4o-mini">GPT-4o Mini (Balanced)</option>
+                <option value="gpt-4o">GPT-4o (Best Quality)</option>
+                <option value="gpt-4-turbo">GPT-4 Turbo (Premium)</option>
+            </select>
+            <p class="hint">Cheaper models work fine for flashcards. Change if you hit rate limits.</p>
+        </div>
     `;
+    
+    // Restore model selection
+    document.getElementById('model-select').value = selectedModel;
     
     // If no Firebase, load from localStorage and show UI
     if (!firebaseReady) {
@@ -145,7 +169,12 @@ function saveApiKey() {
     alert('API key saved successfully!');
 }
 
-
+function saveModel() {
+    const select = document.getElementById('model-select');
+    selectedModel = select.value;
+    localStorage.setItem('openai_model', selectedModel);
+    saveToFirebase();
+}
 
 // Generate flashcards using OpenAI
 async function generateFlashcards() {
@@ -182,7 +211,7 @@ async function generateFlashcards() {
                 'Authorization': `Bearer ${apiKey}`
             },
             body: JSON.stringify({
-                model: 'gpt-3.5-turbo',
+                model: selectedModel,
                 messages: [{
                     role: 'system',
                     content: 'You are a helpful assistant that creates flashcards. Generate 5-10 flashcards from the given text. Return ONLY a JSON array with objects containing "question" and "answer" fields. No other text.'
@@ -407,6 +436,7 @@ function toggleSettings() {
 
 // Make all functions globally available
 window.saveApiKey = saveApiKey;
+window.saveModel = saveModel;
 window.generateFlashcards = generateFlashcards;
 window.startQuiz = startQuiz;
 window.flipCard = flipCard;

@@ -24,6 +24,17 @@
                 </div>
             </form>
             <p class="hint">Your API key syncs across all your devices via Firebase</p>
+            
+            <div style="margin-top: 20px;">
+                <label for="model-select" style="display: block; margin-bottom: 8px; font-weight: 600;">AI Model:</label>
+                <select id="model-select" onchange="saveModel()" style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 1em;">
+                    <option value="gpt-3.5-turbo">GPT-3.5 Turbo (Fast, Cheap)</option>
+                    <option value="gpt-4o-mini">GPT-4o Mini (Balanced)</option>
+                    <option value="gpt-4o">GPT-4o (Best Quality)</option>
+                    <option value="gpt-4-turbo">GPT-4 Turbo (Premium)</option>
+                </select>
+                <p class="hint">Cheaper models work fine for flashcards. Change if you hit rate limits.</p>
+            </div>
         </div>
 
         <!-- Text Input Section -->

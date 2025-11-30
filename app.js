@@ -163,8 +163,19 @@ async function generateFlashcards() {
     
     document.getElementById('loading').classList.remove('hidden');
     
-    try {
-        const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    // Retry logic for rate limits
+    let retries = 3;
+    let delay = 2000; // Start with 2 seconds
+    
+    for (let i = 0; i < retries; i++) {
+        try {
+            if (i > 0) {
+                document.getElementById('loading').textContent = `Rate limited, retrying in ${delay/1000}s... (${i}/${retries})`;
+                await new Promise(resolve => setTimeout(resolve, delay));
+                document.getElementById('loading').textContent = 'Generating flashcards...';
+            }
+            
+            const response = await fetch('https://api.openai.com/v1/chat/completions', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -181,46 +192,58 @@ async function generateFlashcards() {
                 }],
                 temperature: 0.7
             })
-        });
-        
-        if (!response.ok) {
-            throw new Error(`API error: ${response.status}`);
-        }
-        
-        const data = await response.json();
-        const content = data.choices[0].message.content;
-        
-        // Parse JSON from response
-        const jsonMatch = content.match(/\[[\s\S]*\]/);
-        if (!jsonMatch) {
-            throw new Error('Could not parse flashcards from response');
-        }
-        
-        const newCards = JSON.parse(jsonMatch[0]);
-        
-        // Add SM-2 metadata to each card
-        newCards.forEach(card => {
-            flashcards.push({
-                ...card,
-                easeFactor: 2.5,
-                interval: 0,
-                repetitions: 0,
-                nextReview: Date.now(),
-                difficulty: 'easy',
-                mistakes: 0
             });
-        });
-        
-        saveFlashcards();
-        updateStats();
-        document.getElementById('text-input').value = '';
-        alert(`Generated ${newCards.length} flashcards!`);
-        
-    } catch (error) {
-        console.error('Error:', error);
-        alert('Failed to generate flashcards. Check your API key and try again.');
-    } finally {
-        document.getElementById('loading').classList.add('hidden');
+            
+            if (!response.ok) {
+                if (response.status === 429 && i < retries - 1) {
+                    delay *= 2; // Double the delay for next retry
+                    continue; // Retry
+                }
+                throw new Error(`API error: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            const content = data.choices[0].message.content;
+            
+            // Parse JSON from response
+            const jsonMatch = content.match(/\[[\s\S]*\]/);
+            if (!jsonMatch) {
+                throw new Error('Could not parse flashcards from response');
+            }
+            
+            const newCards = JSON.parse(jsonMatch[0]);
+            
+            // Add SM-2 metadata to each card
+            newCards.forEach(card => {
+                flashcards.push({
+                    ...card,
+                    easeFactor: 2.5,
+                    interval: 0,
+                    repetitions: 0,
+                    nextReview: Date.now(),
+                    difficulty: 'easy',
+                    mistakes: 0
+                });
+            });
+            
+            saveFlashcards();
+            updateStats();
+            document.getElementById('text-input').value = '';
+            document.getElementById('loading').classList.add('hidden');
+            alert(`Generated ${newCards.length} flashcards!`);
+            return; // Success, exit retry loop
+            
+        } catch (error) {
+            if (i === retries - 1) {
+                // Last retry failed
+                console.error('Error:', error);
+                document.getElementById('loading').classList.add('hidden');
+                alert('Failed to generate flashcards. Rate limit exceeded. Please wait a minute and try again.');
+                return;
+            }
+            // Continue to next retry
+            delay *= 2;
+        }
     }
 }
 

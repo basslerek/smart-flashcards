@@ -21,24 +21,7 @@
                 <input type="password" id="api-key" placeholder="Enter your OpenAI API key">
                 <button onclick="saveApiKey()">Save Key</button>
             </div>
-            <p class="hint">Your API key is stored securely and never sent anywhere except OpenAI</p>
-            
-            <details style="margin-top: 20px;">
-                <summary style="cursor: pointer; font-weight: 600; color: #667eea;">Configure Firebase (Optional)</summary>
-                <div style="margin-top: 15px;">
-                    <textarea id="firebase-config" placeholder='Paste your Firebase config JSON here:
-{
-  "apiKey": "...",
-  "authDomain": "...",
-  "projectId": "...",
-  "storageBucket": "...",
-  "messagingSenderId": "...",
-  "appId": "..."
-}' style="min-height: 120px; font-family: monospace; font-size: 0.9em;"></textarea>
-                    <button onclick="saveFirebaseConfig()" style="margin-top: 10px;">Save Firebase Config</button>
-                    <p class="hint">Firebase enables cloud sync across all your devices</p>
-                </div>
-            </details>
+            <p class="hint">Your API key syncs across all your devices via Firebase</p>
         </div>
 
         <!-- Text Input Section -->

@@ -1,7 +1,8 @@
 // Firebase imports (will be loaded from CDN)
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
 import { getAuth, signInAnonymously, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
-import { getFirestore, doc, setDoc, getDoc, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+import { getFirestore, doc, setDoc, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+import { firebaseConfig } from './firebase-config.js';
 
 // State management
 let apiKey = localStorage.getItem('openai_api_key') || '';
@@ -15,15 +16,8 @@ let unsubscribe = null;
 
 // Initialize Firebase
 async function initFirebase() {
-    const firebaseConfig = localStorage.getItem('firebase_config');
-    
-    if (!firebaseConfig) {
-        return false;
-    }
-    
     try {
-        const config = JSON.parse(firebaseConfig);
-        const app = initializeApp(config);
+        const app = initializeApp(firebaseConfig);
         auth = getAuth(app);
         db = getFirestore(app);
         
@@ -133,34 +127,7 @@ function saveApiKey() {
     alert('API key saved successfully!');
 }
 
-// Firebase Config Management
-async function saveFirebaseConfig() {
-    const input = document.getElementById('firebase-config');
-    const configText = input.value.trim();
-    
-    if (!configText) {
-        alert('Please paste your Firebase config');
-        return;
-    }
-    
-    try {
-        const config = JSON.parse(configText);
-        
-        // Validate required fields
-        if (!config.apiKey || !config.projectId) {
-            throw new Error('Invalid Firebase config');
-        }
-        
-        localStorage.setItem('firebase_config', configText);
-        alert('Firebase config saved! Reloading app...');
-        
-        // Reload to initialize Firebase
-        window.location.reload();
-    } catch (error) {
-        alert('Invalid Firebase config JSON. Please check and try again.');
-        console.error(error);
-    }
-}
+
 
 // Generate flashcards using OpenAI
 async function generateFlashcards() {
@@ -399,7 +366,6 @@ function toggleSettings() {
 
 // Make all functions globally available
 window.saveApiKey = saveApiKey;
-window.saveFirebaseConfig = saveFirebaseConfig;
 window.generateFlashcards = generateFlashcards;
 window.startQuiz = startQuiz;
 window.flipCard = flipCard;

@@ -17,10 +17,12 @@
         <!-- API Key Setup -->
         <div id="setup-section" class="section">
             <h2>Setup</h2>
-            <div class="input-group">
-                <input type="password" id="api-key" placeholder="Enter your OpenAI API key">
-                <button onclick="saveApiKey()">Save Key</button>
-            </div>
+            <form onsubmit="event.preventDefault(); saveApiKey();">
+                <div class="input-group">
+                    <input type="password" id="api-key" placeholder="Enter your OpenAI API key" autocomplete="off">
+                    <button type="submit">Save Key</button>
+                </div>
+            </form>
             <p class="hint">Your API key syncs across all your devices via Firebase</p>
         </div>
 

@@ -405,19 +405,36 @@ function viewAllCards() {
             
             const cardDiv = document.createElement('div');
             cardDiv.className = 'card-item';
+            cardDiv.id = `card-${index}`;
             cardDiv.innerHTML = `
-                <div class="card-item-question"><strong>Q:</strong> ${escapeHtml(card.question)}</div>
-                <div class="card-item-answer"><strong>A:</strong> ${escapeHtml(card.answer)}</div>
-                <div class="card-item-meta">
-                    Difficulty: <span class="difficulty-badge ${card.difficulty}">${card.difficulty}</span> | 
-                    Repetitions: ${card.repetitions} | 
-                    Mistakes: ${card.mistakes} | 
-                    Next review: ${isOverdue ? '<strong>Due now</strong>' : nextReviewDate.toLocaleDateString()}
+                <div id="card-view-${index}">
+                    <div class="card-item-question"><strong>Q:</strong> ${escapeHtml(card.question)}</div>
+                    <div class="card-item-answer"><strong>A:</strong> ${escapeHtml(card.answer)}</div>
+                    <div class="card-item-meta">
+                        Difficulty: <span class="difficulty-badge ${card.difficulty}">${card.difficulty}</span> | 
+                        Repetitions: ${card.repetitions} | 
+                        Mistakes: ${card.mistakes} | 
+                        Next review: ${isOverdue ? '<strong>Due now</strong>' : nextReviewDate.toLocaleDateString()}
+                    </div>
+                    <div style="margin-top: 10px; display: flex; gap: 8px; flex-wrap: wrap;">
+                        <button onclick="editCard(${index})" class="secondary-btn" style="padding: 6px 12px; font-size: 0.9em;">✏️ Edit</button>
+                        <button onclick="resetCard(${index})" class="secondary-btn" style="padding: 6px 12px; font-size: 0.9em;">🔄 Reset Progress</button>
+                        <button onclick="deleteCard(${index})" class="secondary-btn" style="padding: 6px 12px; font-size: 0.9em; background: #dc3545; color: white;">🗑️ Delete</button>
+                    </div>
                 </div>
-                <div style="margin-top: 10px; display: flex; gap: 8px; flex-wrap: wrap;">
-                    <button onclick="editCard(${index})" class="secondary-btn" style="padding: 6px 12px; font-size: 0.9em;">✏️ Edit</button>
-                    <button onclick="resetCard(${index})" class="secondary-btn" style="padding: 6px 12px; font-size: 0.9em;">🔄 Reset Progress</button>
-                    <button onclick="deleteCard(${index})" class="secondary-btn" style="padding: 6px 12px; font-size: 0.9em; background: #dc3545; color: white;">🗑️ Delete</button>
+                <div id="card-edit-${index}" class="hidden" style="background: #f0f0f0; padding: 15px; border-radius: 8px;">
+                    <div style="margin-bottom: 10px;">
+                        <label style="display: block; margin-bottom: 5px; font-weight: 600;">Question:</label>
+                        <input type="text" id="edit-question-${index}" value="${escapeHtml(card.question)}" style="width: 100%; padding: 8px; border: 2px solid #e0e0e0; border-radius: 6px;">
+                    </div>
+                    <div style="margin-bottom: 10px;">
+                        <label style="display: block; margin-bottom: 5px; font-weight: 600;">Answer:</label>
+                        <textarea id="edit-answer-${index}" style="width: 100%; padding: 8px; border: 2px solid #e0e0e0; border-radius: 6px; min-height: 80px;">${escapeHtml(card.answer)}</textarea>
+                    </div>
+                    <div style="display: flex; gap: 8px;">
+                        <button onclick="saveCardEdit(${index})" class="primary-btn" style="padding: 6px 12px; font-size: 0.9em;">💾 Save</button>
+                        <button onclick="cancelCardEdit(${index})" class="secondary-btn" style="padding: 6px 12px; font-size: 0.9em;">Cancel</button>
+                    </div>
                 </div>
             `;
             listDiv.appendChild(cardDiv);
@@ -473,22 +490,29 @@ function addCard() {
 }
 
 function editCard(index) {
-    const card = flashcards[index];
-    const newQuestion = prompt('Edit question:', card.question);
+    document.getElementById(`card-view-${index}`).classList.add('hidden');
+    document.getElementById(`card-edit-${index}`).classList.remove('hidden');
+    document.getElementById(`edit-question-${index}`).focus();
+}
+
+function cancelCardEdit(index) {
+    document.getElementById(`card-view-${index}`).classList.remove('hidden');
+    document.getElementById(`card-edit-${index}`).classList.add('hidden');
+}
+
+function saveCardEdit(index) {
+    const newQuestion = document.getElementById(`edit-question-${index}`).value.trim();
+    const newAnswer = document.getElementById(`edit-answer-${index}`).value.trim();
     
-    if (newQuestion === null) return; // Cancelled
-    
-    const newAnswer = prompt('Edit answer:', card.answer);
-    
-    if (newAnswer === null) return; // Cancelled
-    
-    if (newQuestion.trim() && newAnswer.trim()) {
-        flashcards[index].question = newQuestion.trim();
-        flashcards[index].answer = newAnswer.trim();
-        saveFlashcards();
-        viewAllCards();
-        alert('Card updated!');
+    if (!newQuestion || !newAnswer) {
+        alert('Question and answer cannot be empty');
+        return;
     }
+    
+    flashcards[index].question = newQuestion;
+    flashcards[index].answer = newAnswer;
+    saveFlashcards();
+    viewAllCards();
 }
 
 function resetCard(index) {
@@ -570,5 +594,7 @@ window.showAddCardForm = showAddCardForm;
 window.cancelAddCard = cancelAddCard;
 window.addCard = addCard;
 window.editCard = editCard;
+window.saveCardEdit = saveCardEdit;
+window.cancelCardEdit = cancelCardEdit;
 window.resetCard = resetCard;
 window.deleteCard = deleteCard;

@@ -545,10 +545,15 @@ function closeCardList() {
 
 function showGenerateSection() {
     hideAllSections();
-    showSection('input-section');
+    const section = document.getElementById('input-section');
+    section.style.display = 'block';
+    section.classList.remove('hidden');
 }
 
 function closeGenerateSection() {
+    const section = document.getElementById('input-section');
+    section.style.display = 'none';
+    section.classList.add('hidden');
     hideAllSections();
     showSection('deck-section');
 }

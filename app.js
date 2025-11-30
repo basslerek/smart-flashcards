@@ -58,6 +58,10 @@ function syncFromFirebase() {
             if (data.apiKey) {
                 apiKey = data.apiKey;
                 localStorage.setItem('openai_api_key', apiKey);
+                document.getElementById('api-key').value = '••••••••';
+                document.getElementById('setup-section').classList.add('hidden');
+                showSection('input-section');
+                showSection('deck-section');
             }
             updateStats();
         }

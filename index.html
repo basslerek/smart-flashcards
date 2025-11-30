@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <title>Smart Flashcards</title>
-    <link rel="stylesheet" href="styles.css?v=2">
+    <link rel="stylesheet" href="styles.css?v=3">
 </head>
 <body>
     <div class="container">
@@ -55,9 +55,11 @@
                     <span id="mastered-cards">0</span>
                 </div>
             </div>
-            <button onclick="startQuiz()" class="primary-btn">Start Learning</button>
-            <button onclick="viewAllCards()" class="secondary-btn">View All Cards</button>
-            <button onclick="showGenerateSection()" class="secondary-btn">🤖 Generate with AI</button>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <button onclick="startQuiz()" class="primary-btn" style="flex: 1; min-width: 200px;">Start Learning</button>
+                <button onclick="viewAllCards()" class="secondary-btn" style="flex: 1; min-width: 150px;">View All Cards</button>
+                <button onclick="showGenerateSection()" class="secondary-btn" style="flex: 1; min-width: 150px;">🤖 Generate with AI</button>
+            </div>
         </div>
 
         <!-- Text Input Section -->

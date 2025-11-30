@@ -108,6 +108,7 @@ async function logout() {
             flashcards = [];
             apiKey = '';
             userId = null;
+            localStorage.clear();
             
             // Stop Firebase sync
             if (unsubscribe) {
@@ -115,10 +116,8 @@ async function logout() {
                 unsubscribe = null;
             }
             
-            // Show login screen
-            hideAllSections();
-            document.getElementById('auth-section').classList.remove('hidden');
-            alert('Logged out successfully!');
+            // Reload page to reset everything
+            window.location.reload();
         } catch (error) {
             alert('Logout error: ' + error.message);
             console.error('Logout error:', error);

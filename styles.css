@@ -171,6 +171,13 @@ button {
     color: #721c24;
 }
 
+.card-item .difficulty-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.85em;
+}
+
 .flashcard {
     background: #f9f9f9;
     border: 2px solid #e0e0e0;

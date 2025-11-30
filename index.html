@@ -98,7 +98,22 @@
 
         <!-- Card List View -->
         <div id="list-section" class="section hidden">
-            <h2>All Cards</h2>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2 style="margin: 0;">All Cards</h2>
+                <button onclick="showAddCardForm()" class="primary-btn" style="padding: 8px 16px;">+ Add Card</button>
+            </div>
+            
+            <!-- Add Card Form -->
+            <div id="add-card-form" class="hidden" style="background: #f9f9f9; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+                <h3 style="margin-top: 0;">Add New Card</h3>
+                <input type="text" id="new-question" placeholder="Question" style="width: 100%; padding: 10px; margin-bottom: 10px; border: 2px solid #e0e0e0; border-radius: 8px;">
+                <textarea id="new-answer" placeholder="Answer" style="width: 100%; padding: 10px; margin-bottom: 10px; border: 2px solid #e0e0e0; border-radius: 8px; min-height: 80px;"></textarea>
+                <div style="display: flex; gap: 10px;">
+                    <button onclick="addCard()" class="primary-btn">Save Card</button>
+                    <button onclick="cancelAddCard()" class="secondary-btn">Cancel</button>
+                </div>
+            </div>
+            
             <div id="card-list"></div>
             <button onclick="closeCardList()" class="secondary-btn">Close</button>
         </div>

@@ -400,15 +400,24 @@ function viewAllCards() {
         listDiv.innerHTML = '<p>No flashcards yet. Generate some first!</p>';
     } else {
         flashcards.forEach((card, index) => {
+            const nextReviewDate = new Date(card.nextReview);
+            const isOverdue = card.nextReview <= Date.now();
+            
             const cardDiv = document.createElement('div');
             cardDiv.className = 'card-item';
             cardDiv.innerHTML = `
-                <div class="card-item-question">Q: ${card.question}</div>
-                <div class="card-item-answer">A: ${card.answer}</div>
+                <div class="card-item-question"><strong>Q:</strong> ${escapeHtml(card.question)}</div>
+                <div class="card-item-answer"><strong>A:</strong> ${escapeHtml(card.answer)}</div>
                 <div class="card-item-meta">
-                    Difficulty: ${card.difficulty} | 
+                    Difficulty: <span class="difficulty-badge ${card.difficulty}">${card.difficulty}</span> | 
                     Repetitions: ${card.repetitions} | 
-                    Mistakes: ${card.mistakes}
+                    Mistakes: ${card.mistakes} | 
+                    Next review: ${isOverdue ? '<strong>Due now</strong>' : nextReviewDate.toLocaleDateString()}
+                </div>
+                <div style="margin-top: 10px; display: flex; gap: 8px; flex-wrap: wrap;">
+                    <button onclick="editCard(${index})" class="secondary-btn" style="padding: 6px 12px; font-size: 0.9em;">✏️ Edit</button>
+                    <button onclick="resetCard(${index})" class="secondary-btn" style="padding: 6px 12px; font-size: 0.9em;">🔄 Reset Progress</button>
+                    <button onclick="deleteCard(${index})" class="secondary-btn" style="padding: 6px 12px; font-size: 0.9em; background: #dc3545; color: white;">🗑️ Delete</button>
                 </div>
             `;
             listDiv.appendChild(cardDiv);
@@ -417,6 +426,95 @@ function viewAllCards() {
     
     hideAllSections();
     showSection('list-section');
+}
+
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+function showAddCardForm() {
+    document.getElementById('add-card-form').classList.remove('hidden');
+    document.getElementById('new-question').focus();
+}
+
+function cancelAddCard() {
+    document.getElementById('add-card-form').classList.add('hidden');
+    document.getElementById('new-question').value = '';
+    document.getElementById('new-answer').value = '';
+}
+
+function addCard() {
+    const question = document.getElementById('new-question').value.trim();
+    const answer = document.getElementById('new-answer').value.trim();
+    
+    if (!question || !answer) {
+        alert('Please enter both question and answer');
+        return;
+    }
+    
+    flashcards.push({
+        question,
+        answer,
+        easeFactor: 2.5,
+        interval: 0,
+        repetitions: 0,
+        nextReview: Date.now(),
+        difficulty: 'easy',
+        mistakes: 0
+    });
+    
+    saveFlashcards();
+    updateStats();
+    cancelAddCard();
+    viewAllCards();
+    alert('Card added successfully!');
+}
+
+function editCard(index) {
+    const card = flashcards[index];
+    const newQuestion = prompt('Edit question:', card.question);
+    
+    if (newQuestion === null) return; // Cancelled
+    
+    const newAnswer = prompt('Edit answer:', card.answer);
+    
+    if (newAnswer === null) return; // Cancelled
+    
+    if (newQuestion.trim() && newAnswer.trim()) {
+        flashcards[index].question = newQuestion.trim();
+        flashcards[index].answer = newAnswer.trim();
+        saveFlashcards();
+        viewAllCards();
+        alert('Card updated!');
+    }
+}
+
+function resetCard(index) {
+    if (confirm('Reset learning progress for this card?')) {
+        flashcards[index].easeFactor = 2.5;
+        flashcards[index].interval = 0;
+        flashcards[index].repetitions = 0;
+        flashcards[index].nextReview = Date.now();
+        flashcards[index].difficulty = 'easy';
+        flashcards[index].mistakes = 0;
+        
+        saveFlashcards();
+        updateStats();
+        viewAllCards();
+        alert('Card progress reset!');
+    }
+}
+
+function deleteCard(index) {
+    if (confirm('Delete this card permanently?')) {
+        flashcards.splice(index, 1);
+        saveFlashcards();
+        updateStats();
+        viewAllCards();
+        alert('Card deleted!');
+    }
 }
 
 function closeCardList() {
@@ -468,3 +566,9 @@ window.endQuiz = endQuiz;
 window.viewAllCards = viewAllCards;
 window.closeCardList = closeCardList;
 window.toggleSettings = toggleSettings;
+window.showAddCardForm = showAddCardForm;
+window.cancelAddCard = cancelAddCard;
+window.addCard = addCard;
+window.editCard = editCard;
+window.resetCard = resetCard;
+window.deleteCard = deleteCard;

@@ -47,13 +47,17 @@ function syncFromFirebase() {
     
     // Real-time sync
     unsubscribe = onSnapshot(userDocRef, (docSnap) => {
+        console.log('Firebase sync triggered');
         if (docSnap.exists()) {
             const data = docSnap.data();
             flashcards = data.flashcards || [];
+            console.log(`Loaded ${flashcards.length} cards from Firebase`);
+            
             if (data.apiKey) {
                 apiKey = data.apiKey;
                 localStorage.setItem('openai_api_key', apiKey);
-                document.getElementById('api-key').value = '••••••••';
+                const apiKeyInput = document.getElementById('api-key');
+                if (apiKeyInput) apiKeyInput.value = '••••••••';
                 document.getElementById('setup-section').classList.add('hidden');
                 showSection('deck-section');
             }
@@ -66,10 +70,24 @@ function syncFromFirebase() {
                 if (mainSelect) mainSelect.value = selectedModel;
             }
             updateStats();
+            
+            // Update sync status
+            const syncStatus = document.getElementById('sync-status');
+            if (syncStatus) {
+                syncStatus.textContent = `✓ Synced with Firebase (${flashcards.length} cards)`;
+                syncStatus.style.color = '#4a9eff';
+            }
         } else {
+            console.log('No Firebase data found');
             // No data in Firebase yet - show setup if no local API key
             if (!apiKey) {
                 document.getElementById('setup-section').classList.remove('hidden');
+            }
+            
+            const syncStatus = document.getElementById('sync-status');
+            if (syncStatus) {
+                syncStatus.textContent = 'No data in Firebase yet';
+                syncStatus.style.color = '#888';
             }
         }
     });
@@ -100,11 +118,13 @@ async function saveToFirebase() {
 
 // Initialize app
 document.addEventListener('DOMContentLoaded', async () => {
+    console.log('App initializing...');
     // Show loading state
     document.getElementById('setup-section').innerHTML = '<h2>Loading...</h2><p>Connecting to Firebase...</p>';
     
     // Try to init Firebase
     const firebaseReady = await initFirebase();
+    console.log('Firebase ready:', firebaseReady);
     
     // Restore setup section content
     document.getElementById('setup-section').innerHTML = `

@@ -98,6 +98,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     
     if (apiKey) {
         document.getElementById('api-key').value = '••••••••';
+        document.getElementById('setup-section').classList.add('hidden');
         showSection('input-section');
         showSection('deck-section');
         updateStats();
@@ -121,6 +122,7 @@ function saveApiKey() {
     // Save to Firebase if available
     saveToFirebase();
     
+    document.getElementById('setup-section').classList.add('hidden');
     showSection('input-section');
     showSection('deck-section');
     updateStats();
@@ -386,6 +388,11 @@ function saveFlashcards() {
     saveToFirebase();
 }
 
+function toggleSettings() {
+    const setupSection = document.getElementById('setup-section');
+    setupSection.classList.toggle('hidden');
+}
+
 // Make all functions globally available
 window.saveApiKey = saveApiKey;
 window.saveFirebaseConfig = saveFirebaseConfig;
@@ -396,3 +403,4 @@ window.rateCard = rateCard;
 window.endQuiz = endQuiz;
 window.viewAllCards = viewAllCards;
 window.closeCardList = closeCardList;
+window.toggleSettings = toggleSettings;

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Flashcards</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🧠 Smart Flashcards</h1>
+            <p class="subtitle">AI-powered learning with spaced repetition</p>
+        </header>
+
+        <!-- API Key Setup -->
+        <div id="setup-section" class="section">
+            <h2>Setup</h2>
+            <div class="input-group">
+                <input type="password" id="api-key" placeholder="Enter your OpenAI API key">
+                <button onclick="saveApiKey()">Save Key</button>
+            </div>
+            <p class="hint">Your API key is stored securely and never sent anywhere except OpenAI</p>
+            
+            <details style="margin-top: 20px;">
+                <summary style="cursor: pointer; font-weight: 600; color: #667eea;">Configure Firebase (Optional)</summary>
+                <div style="margin-top: 15px;">
+                    <textarea id="firebase-config" placeholder='Paste your Firebase config JSON here:
+{
+  "apiKey": "...",
+  "authDomain": "...",
+  "projectId": "...",
+  "storageBucket": "...",
+  "messagingSenderId": "...",
+  "appId": "..."
+}' style="min-height: 120px; font-family: monospace; font-size: 0.9em;"></textarea>
+                    <button onclick="saveFirebaseConfig()" style="margin-top: 10px;">Save Firebase Config</button>
+                    <p class="hint">Firebase enables cloud sync across all your devices</p>
+                </div>
+            </details>
+        </div>
+
+        <!-- Text Input Section -->
+        <div id="input-section" class="section hidden">
+            <h2>Generate Flashcards</h2>
+            <textarea id="text-input" placeholder="Paste your text here (article, notes, etc.)..."></textarea>
+            <button onclick="generateFlashcards()" class="primary-btn">Generate Flashcards</button>
+            <div id="loading" class="hidden">Generating flashcards...</div>
+        </div>
+
+        <!-- Flashcard Management -->
+        <div id="deck-section" class="section hidden">
+            <h2>Your Deck</h2>
+            <div class="stats">
+                <div class="stat-item">
+                    <span class="stat-label">Total Cards:</span>
+                    <span id="total-cards">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Due Today:</span>
+                    <span id="due-cards">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Mastered:</span>
+                    <span id="mastered-cards">0</span>
+                </div>
+            </div>
+            <button onclick="startQuiz()" class="primary-btn">Start Quiz</button>
+            <button onclick="viewAllCards()" class="secondary-btn">View All Cards</button>
+        </div>
+
+        <!-- Quiz Section -->
+        <div id="quiz-section" class="section hidden">
+            <div class="quiz-header">
+                <h2>Quiz Mode</h2>
+                <div class="difficulty-badge" id="difficulty-badge">Easy</div>
+            </div>
+            <div id="quiz-card" class="flashcard">
+                <div class="card-front" id="card-question"></div>
+                <div class="card-back hidden" id="card-answer"></div>
+                <button onclick="flipCard()" class="flip-btn">Show Answer</button>
+            </div>
+            <div id="quiz-controls" class="hidden">
+                <button onclick="rateCard(1)" class="rate-btn hard">Hard</button>
+                <button onclick="rateCard(3)" class="rate-btn good">Good</button>
+                <button onclick="rateCard(5)" class="rate-btn easy">Easy</button>
+            </div>
+            <button onclick="endQuiz()" class="secondary-btn">End Quiz</button>
+        </div>
+
+        <!-- Card List View -->
+        <div id="list-section" class="section hidden">
+            <h2>All Cards</h2>
+            <div id="card-list"></div>
+            <button onclick="closeCardList()" class="secondary-btn">Close</button>
+        </div>
+    </div>
+
+    <script type="module" src="app.js"></script>
+</body>
+</html>

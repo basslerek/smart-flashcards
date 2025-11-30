@@ -1,6 +1,6 @@
 // Firebase imports (will be loaded from CDN)
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
 import { getFirestore, doc, setDoc, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 import { firebaseConfig } from './firebase-config.js';
 
@@ -96,6 +96,33 @@ async function signup() {
             alert('Signup error: ' + error.message);
         }
         console.error('Signup error:', error);
+    }
+}
+
+// Logout function
+async function logout() {
+    if (confirm('Are you sure you want to logout?')) {
+        try {
+            await signOut(auth);
+            // Clear local data
+            flashcards = [];
+            apiKey = '';
+            userId = null;
+            
+            // Stop Firebase sync
+            if (unsubscribe) {
+                unsubscribe();
+                unsubscribe = null;
+            }
+            
+            // Show login screen
+            hideAllSections();
+            document.getElementById('auth-section').classList.remove('hidden');
+            alert('Logged out successfully!');
+        } catch (error) {
+            alert('Logout error: ' + error.message);
+            console.error('Logout error:', error);
+        }
     }
 }
 
@@ -684,6 +711,7 @@ function toggleSettings() {
 // Make all functions globally available
 window.login = login;
 window.signup = signup;
+window.logout = logout;
 window.saveApiKey = saveApiKey;
 window.saveModel = saveModel;
 window.saveModelMain = saveModelMain;

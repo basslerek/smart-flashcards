@@ -182,7 +182,7 @@ async function generateFlashcards() {
                 'Authorization': `Bearer ${apiKey}`
             },
             body: JSON.stringify({
-                model: 'gpt-4o-mini',
+                model: 'gpt-3.5-turbo',
                 messages: [{
                     role: 'system',
                     content: 'You are a helpful assistant that creates flashcards. Generate 5-10 flashcards from the given text. Return ONLY a JSON array with objects containing "question" and "answer" fields. No other text.'

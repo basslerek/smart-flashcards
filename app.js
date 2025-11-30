@@ -55,7 +55,6 @@ function syncFromFirebase() {
                 localStorage.setItem('openai_api_key', apiKey);
                 document.getElementById('api-key').value = '••••••••';
                 document.getElementById('setup-section').classList.add('hidden');
-                showSection('input-section');
                 showSection('deck-section');
             }
             if (data.model) {
@@ -142,7 +141,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (apiKey) {
             document.getElementById('api-key').value = '••••••••';
             document.getElementById('setup-section').classList.add('hidden');
-            showSection('input-section');
             showSection('deck-section');
             updateStats();
         }
@@ -168,7 +166,6 @@ function saveApiKey() {
     saveToFirebase();
     
     document.getElementById('setup-section').classList.add('hidden');
-    showSection('input-section');
     showSection('deck-section');
     updateStats();
     alert('API key saved successfully!');
@@ -282,6 +279,7 @@ async function generateFlashcards() {
             document.getElementById('text-input').value = '';
             document.getElementById('loading').classList.add('hidden');
             alert(`Generated ${newCards.length} flashcards!`);
+            closeGenerateSection();
             return; // Success, exit retry loop
             
         } catch (error) {
@@ -386,7 +384,6 @@ function rateCard(quality) {
 
 function endQuiz() {
     hideAllSections();
-    showSection('input-section');
     showSection('deck-section');
     alert('Learning session completed! Great job! 🎉');
 }
@@ -543,7 +540,16 @@ function deleteCard(index) {
 
 function closeCardList() {
     hideAllSections();
+    showSection('deck-section');
+}
+
+function showGenerateSection() {
+    hideAllSections();
     showSection('input-section');
+}
+
+function closeGenerateSection() {
+    hideAllSections();
     showSection('deck-section');
 }
 
@@ -590,6 +596,8 @@ window.endQuiz = endQuiz;
 window.viewAllCards = viewAllCards;
 window.closeCardList = closeCardList;
 window.toggleSettings = toggleSettings;
+window.showGenerateSection = showGenerateSection;
+window.closeGenerateSection = closeGenerateSection;
 window.showAddCardForm = showAddCardForm;
 window.cancelAddCard = cancelAddCard;
 window.addCard = addCard;

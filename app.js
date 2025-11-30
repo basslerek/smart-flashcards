@@ -58,6 +58,11 @@ function syncFromFirebase() {
                 showSection('deck-section');
             }
             updateStats();
+        } else {
+            // No data in Firebase yet - show setup if no local API key
+            if (!apiKey) {
+                document.getElementById('setup-section').classList.remove('hidden');
+            }
         }
     });
 }
@@ -86,21 +91,34 @@ async function saveToFirebase() {
 
 // Initialize app
 document.addEventListener('DOMContentLoaded', async () => {
+    // Show loading state
+    document.getElementById('setup-section').innerHTML = '<h2>Loading...</h2><p>Connecting to Firebase...</p>';
+    
     // Try to init Firebase
     const firebaseReady = await initFirebase();
     
-    // If no Firebase, load from localStorage
+    // Restore setup section content
+    document.getElementById('setup-section').innerHTML = `
+        <h2>Setup</h2>
+        <div class="input-group">
+            <input type="password" id="api-key" placeholder="Enter your OpenAI API key">
+            <button onclick="saveApiKey()">Save Key</button>
+        </div>
+        <p class="hint">Your API key syncs across all your devices via Firebase</p>
+    `;
+    
+    // If no Firebase, load from localStorage and show UI
     if (!firebaseReady) {
         flashcards = JSON.parse(localStorage.getItem('flashcards')) || [];
+        if (apiKey) {
+            document.getElementById('api-key').value = '••••••••';
+            document.getElementById('setup-section').classList.add('hidden');
+            showSection('input-section');
+            showSection('deck-section');
+            updateStats();
+        }
     }
-    
-    if (apiKey) {
-        document.getElementById('api-key').value = '••••••••';
-        document.getElementById('setup-section').classList.add('hidden');
-        showSection('input-section');
-        showSection('deck-section');
-        updateStats();
-    }
+    // If Firebase is ready, syncFromFirebase will handle showing the UI
 });
 
 // API Key Management
